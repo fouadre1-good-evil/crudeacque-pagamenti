@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1777969702 source:i:\mikschool usb iii superiore\progetti\crudacque & pagamenti\crudacque\main.cpp
+	<iostream>
+	<cstring>
+	<fstream>
+

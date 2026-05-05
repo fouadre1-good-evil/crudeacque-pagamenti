@@ -1,0 +1,28 @@
+
+Cosa vuoi modificare? Questi sono i valori attuali
+┌────────────────────────────────────────────────────────────────┐               
+│  - Utente: [Rossi]                                             │
+│  - Codice Fiscale: [87GF43FD5GF]                               │
+│  - Indirizzo: [Via degli uccelli 67]                           │
+│  - Lettura del trimestre attuale: [100] mq                     │
+│  - Lettura del trimestre precedente: [200] mq                  │
+│  - Importo delle bollette non pagate: [84.6] euro              │
+└────────────────────────────────────────────────────────────────┘
+
+Premi enter sul valore che vuoi modificare
+
+
+------------------------------------------------------------------------------------------
+Ci si muove con le freccette e cambiano i colori
+Una volta che si clicca viene cancellato il valore, tipo cosi
+
+┌────────────────────────────────────────────────────────────────┐               
+│  - Utente:                                                     │
+│  - Codice Fiscale: [87GF43FD5GF]                               │
+│  - Indirizzo: [Via degli uccelli 67]                           │
+│  - Lettura del trimestre attuale: [100] mq                     │
+│  - Lettura del trimestre precedente: [200] mq                  │
+│  - Importo delle bollette non pagate: [84.6] euro              │
+└────────────────────────────────────────────────────────────────┘
+
+compare il cursore e l'utente puo scrivere quello che vuole modificare
