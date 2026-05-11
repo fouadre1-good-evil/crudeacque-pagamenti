@@ -25,24 +25,25 @@ struct Archivio {
 };
 
 Archivio tab [MAX];
-
-//Prototipi
-void inputStringa (int maxval, char mex[], char s[]);
-int inputInteroSenzaMax (int min, char mex[]);
 Archivio inputVendite ();
+
+void inputStringa (int maxval, char mex[], char s[]);
 void inputTabella (Archivio tab [], int &n, int posAttuale);
 void creaFile (int &n);
-int lunghezzaNumero(double n);
 void menuModificaUI(Archivio &t);
+void gotoXY(int x, int y);
+void hideCursor();
+void ShowCursor();
+
+int lunghezzaNumero(double n);
+int inputInteroSenzaMax (int min, char mex[]);
 
 HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
-int main()
-{
+int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    /*
-    USATA PER FARE PROVE PER LA MODIFICA
+    system("color B0");
     Archivio t;
     strcpy (tab[0].utente, "LAFORESTADICAZZIVOLANTINELLONELLONELLONELLONELLONELLO");
     strcpy (tab[0].codiceFiscale, "87GF43FD5GF");
@@ -52,7 +53,6 @@ int main()
     tab[0].bolletteNonPagate = 84.6;
     t = tab[0];
     menuModificaUI(t);
-    */
 }
 
 void inputStringa (int maxval, char mex[], char s[]) {
@@ -137,22 +137,24 @@ int lunghezzaNumero(double n) {
 
 void menuModificaUI(Archivio &t) {
 
-    int scelta = 0;
+    int b = 4;
+    int bp = b;
     bool inMenu = true;
-
     while (inMenu) {
-        system("cls");
+        hideCursor();
+        gotoXY(0,0);
         cout << "Cosa vuoi modificare? Usa le frecce SU/GIU e premi INVIO.\n";
+        gotoXY(0,1);
         cout << "Premi ESC per uscire.\n\n";
 
         //Calcolo della lunghezza di ogni singola riga
         int lunghezze[6];
-        lunghezze[0] = 12 + strlen(t.utente);
-        lunghezze[1] = 20 + strlen(t.codiceFiscale);
-        lunghezze[2] = 15 + strlen(t.indirizzo);
-        lunghezze[3] = 38 + lunghezzaNumero(t.trimestreAttuale);
-        lunghezze[4] = 41 + lunghezzaNumero(t.trimestrePrecedente);
-        lunghezze[5] = 44 + lunghezzaNumero(t.bolletteNonPagate);
+        lunghezze[0] = 5  + strlen(t.utente);
+        lunghezze[1] = 13 + strlen(t.codiceFiscale);
+        lunghezze[2] = 8  + strlen(t.indirizzo);
+        lunghezze[3] = 31 + lunghezzaNumero(t.trimestreAttuale);
+        lunghezze[4] = 34 + lunghezzaNumero(t.trimestrePrecedente);
+        lunghezze[5] = 37 + lunghezzaNumero(t.bolletteNonPagate);
 
         //Trovo qualle piu grande
         int maxLen = lunghezze[0];
@@ -161,7 +163,7 @@ void menuModificaUI(Archivio &t) {
                 maxLen = lunghezze[i];
             }
         }
-
+        gotoXY(2,3);
         cout << "┌";
         for(int j = 0; j < maxLen + 6; j++) {
             cout << "─";
@@ -169,26 +171,63 @@ void menuModificaUI(Archivio &t) {
         cout << "┐\n";
 
         for (int i = 0; i < 6; i++) {
-            cout << "│ ";
-
-            if (i == scelta) {
-                cout << "─>  ";
-            } else {
-                cout << "    ";
-            }
+            gotoXY(2,4+i);
+            cout << "│";
 
             if (i == 0) {
-                cout << "- Utente: [" << t.utente << "]";
+                gotoXY(3,4);
+                cout << "- ";
+                if (b == 4){
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                gotoXY(5,4);
+                cout << "Utente: " << t.utente << "";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
             } else if (i == 1) {
-                cout << "- Codice Fiscale: [" << t.codiceFiscale << "]";
+                gotoXY(3,5);
+                cout << "- ";
+                if (b == 5){
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                gotoXY(5,5);
+                cout << "Codice Fiscale: " << t.codiceFiscale << "";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
             } else if (i == 2) {
-                cout << "- Indirizzo: [" << t.indirizzo << "]";
+                gotoXY(3,6);
+                cout << "- ";
+                if (b == 6){
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                gotoXY(5,6);
+                cout << "Indirizzo: " << t.indirizzo << "";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
             } else if (i == 3) {
-                cout << "- Lettura del trimestre attuale: [" << t.trimestreAttuale << "] mq";
+                gotoXY(3,7);
+                cout << "- ";
+                if (b == 7){
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                gotoXY(5,7);
+                cout << "Lettura del trimestre attuale: " << t.trimestreAttuale << " mq";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
             } else if (i == 4) {
-                cout << "- Lettura del trimestre precedente: [" << t.trimestrePrecedente << "] mq";
+                gotoXY(3,8);
+                cout << "- ";
+                if (b == 8){
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                gotoXY(5,8);
+                cout << "Lettura del trimestre precedente: " << t.trimestrePrecedente << " mq";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
             } else if (i == 5) {
-                cout << "- Importo delle bollette non pagate: [" << t.bolletteNonPagate << "] euro";
+                gotoXY(3,9);
+                cout << "- ";
+                if (b == 9){
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                gotoXY(5,9);
+                cout << "Importo delle bollette non pagate: " << t.bolletteNonPagate << " euro";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
             }
 
             int spaziMancanti = maxLen - lunghezze[i];
@@ -197,52 +236,69 @@ void menuModificaUI(Archivio &t) {
             }
             cout << " │\n";
         }
-
+        gotoXY(0,bp);
+        cout << "  ";
+        gotoXY(0,b);
+        cout <<"->";
+        gotoXY(2,10);
         cout << "└";
         for(int j = 0; j < maxLen + 6; j++) {
             cout << "─";
         }
         cout << "┘\n";
-
+        bp = b;
         char tasto = _getch();
-
         if (tasto == ESC) {
             inMenu = false;
-        } else if (tasto == -32 || tasto == 224) {
-            tasto = _getch();
-            if (tasto == SU && scelta > 0) {
-                scelta--;
-            }
-            if (tasto == GIU && scelta < 5) {
-                scelta++;
+        }
+        if (tasto == SU) {
+            if(b == 4){
+                b = 9;
+            }else{
+                b-=1;
             }
         }
-        else if (tasto == ENTER) {
-            system("cls");
+        if (tasto == GIU) {
+            if(b == 9){
+                b = 4;
+            }else{
+                b+=1;
+            }
+        }
+        if (tasto == ENTER) {
             cin.sync();
-            switch (scelta) {
-                case 0:
-                    inputStringa(MAX_NOME, "Inserisci il nuovo utente: ", t.utente);
-                    break;
-                case 1:
-                    inputStringa(16, "Inserisci il nuovo CF: ", t.codiceFiscale);
-                    break;
-                case 2:
-                    inputStringa(MAX_NOME, "Inserisci il nuovo indirizzo: ", t.indirizzo);
-                    break;
-                case 3:
-                    t.trimestreAttuale = inputInteroSenzaMax(0, "Nuova lettura attuale (mq): ");
-                    break;
-                case 4:
-                    t.trimestrePrecedente = inputInteroSenzaMax(0, "Nuova lettura precedente (mq): ");
-                    break;
-                case 5:
-                    t.bolletteNonPagate = inputInteroSenzaMax(0, "Nuovo importo bollette (euro): ");
-                    break;
+            switch (b) {
+            case 0:
+
+                break;
+            case 1:
+                inputStringa(16, "Inserisci il nuovo CF: ", t.codiceFiscale);
+                break;
+            case 2:
+                inputStringa(MAX_NOME, "Inserisci il nuovo indirizzo: ", t.indirizzo);
+                break;
+            case 3:
+                t.trimestreAttuale = inputInteroSenzaMax(0, "Nuova lettura attuale (mq): ");
+                break;
+            case 4:
+                t.trimestrePrecedente = inputInteroSenzaMax(0, "Nuova lettura precedente (mq): ");
+                break;
+            case 5:
+                t.bolletteNonPagate = inputInteroSenzaMax(0, "Nuovo importo bollette (euro): ");
+                break;
             }
         }
     }
 }
+
+void gotoXY(int x, int y) {
+    COORD coordinate;
+    coordinate.X = x;
+    coordinate.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coordinate);
+}
+
+
 
 void hideCursor () {
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
