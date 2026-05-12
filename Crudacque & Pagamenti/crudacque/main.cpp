@@ -28,7 +28,7 @@ Archivio tab [MAX];
 Archivio inputVendite ();
 
 void inputStringa (int maxval, char mex[], char s[]);
-void inputTabella (Archivio tab [], int &n, int posAttuale);
+void inputTabella (Archivio tab [], int &n);
 void creaFile (int &n);
 void modificaMenu(Archivio &t);
 void gotoXY(int x, int y);
@@ -48,18 +48,13 @@ int main() {
     SetConsoleCP(CP_UTF8);
     system("color B0");
     int n;
-    menu(n);
-
-
-    Archivio t;
     strcpy (tab[0].utente, "PROVA");
     strcpy (tab[0].codiceFiscale, "87GF43FD5GF");
     strcpy (tab[0].indirizzo, "Via degli uccelli 67");
     tab[0].trimestreAttuale = 100;
     tab[0].trimestrePrecedente = 200;
     tab[0].bolletteNonPagate = 84.6;
-    t = tab[0];
-    modificaMenu(t);
+    menu(n);
 }
 
 void inputStringa (int maxval, char mex[], char s[]) {
@@ -82,6 +77,7 @@ int inputIntero (int min, int max, char mex[]) {
     int n;
     do {
         cout << mex;
+        cout <<endl;
         cin >> n;
     } while (n < min || n >= max);
     return n;
@@ -98,9 +94,9 @@ Archivio inputVendite () {
     return t;
 }
 
-void inputTabella (Archivio tab [], int &n, int posAttuale) {
+void inputTabella (Archivio tab [], int &n) {
     n = inputIntero (0, MAX, "Quanti utenze totali ci sono, massimo 500");
-    for (int i = posAttuale; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         cout << "Inserisci i dati per l'utente numero " << i << endl << ":";
         tab[i] = inputVendite ();
     }
@@ -198,9 +194,30 @@ void menu(int &n) {
             system("cls");
             switch (i) {
             case 0:
+                inputTabella(tab,n);
+                system("cls");
+                creaFile (n);
                 break;
-            case 1:
+            case 1: {
+                fstream fTrimestre;
+                fTrimestre.open("TRIMESTRE.bin",ios::binary|ios::in|ios::out);
+                if(!fTrimestre.is_open()) {
+                    perror("Errore:");
+                } else {
+                    int posizione;
+                    system("cls");
+                    cout << "Quale utente si vuole modificare?"<<endl;
+                    cin >>posizione;
+                    Archivio t;
+                    fTrimestre.seekg((posizione-1)*sizeof(Archivio), ios::beg);
+                    fTrimestre.read((char *)&t, sizeof(Archivio));
+                    system("cls");
+                    modificaMenu(t);
+                    fTrimestre.seekp((-1)*sizeof(Archivio), ios::cur);
+                    fTrimestre.write((char *)&t, sizeof(Archivio));
+                }
                 break;
+            }
             case 2:
                 break;
             case 3:
@@ -211,18 +228,6 @@ void menu(int &n) {
         }
     }
 }
-
-/*
-QUESTA PARTE VA NEL MENU, DA COPIARE E INCOLLARE
-    Archivio t;
-    f.seekg((posizione-1)*sizeof(Archivio), ios::beg);
-    f.read((char *)&t, sizeof(Archivio));
-    modificaMenu(t)
-    f.seekp((-1)*sizeof(Archivio), ios::cur);
-    f.write((char *)&t, sizeof(Archivio));
-
-*/
-
 
 int lunghezzaNumero(double n) {
     int len = 0;
