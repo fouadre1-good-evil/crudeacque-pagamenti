@@ -27,6 +27,7 @@ struct Archivio {
 
 Archivio tab [MAX];
 Archivio inputArchivio ();
+Archivio Cancellare;
 
 void inputStringa (int maxval, char mex[], char s[]);
 void inputTabella (Archivio tab [], int &posAttuale);
@@ -37,6 +38,7 @@ void graficaMenu (Archivio t, int b, int bp, bool inserimento);
 void hideCursor();
 void showCursor();
 void menu(int &n);
+void Cancella_Utente(int &posAttuale,int &contanti,fstream &fTrimestre);
 
 int lunghezzaNumero(double n);
 int inputInteroSenzaMax (int min, char mex[]);
@@ -45,13 +47,15 @@ int inputIntero (int min, int max, char mex[]);
 HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
 int main() {
+    keybd_event(VK_MENU, 0x36,0,0);                  // ---------|
+    keybd_event(VK_RETURN, 0x1c,0,0);                //          | ------> Per mettere lo
+    keybd_event(VK_RETURN, 0x1c,KEYEVENTF_KEYUP,0);  //          | ------> schermo intero all'avvio
+    keybd_event(VK_MENU, 0x38,KEYEVENTF_KEYUP,0);    // ---------|
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
     system("color B0");
-
     ifstream fLettura("TRIMESTRE.bin", ios::binary | ios::ate);
     int posAttuale = 0;
-
     if (!fLettura.is_open()) {
         creaFile();
     } else {
@@ -63,7 +67,6 @@ int main() {
         }
         fLettura.close();
     }
-
     system("cls");
     menu(posAttuale);
 }
@@ -129,63 +132,64 @@ void creaFile () {
 }
 
 void menu(int &posAttuale) {
-    int i=0;
+    int i = 0;
+    int contanti = 0;
     fstream fTrimestre;
     int ip;
     bool inMenu = true;
     while (inMenu) {
         hideCursor();
-        gotoXY(1,1);
+        gotoXY(1, 1);
         cout << "Selezione come vuoi procedere. Usa le frecce SU/GIU e premi INVIO.\n";
-        gotoXY(1,10);
+        gotoXY(1, 10);
         cout << "Premi ESC per uscire.\n\n";
-        gotoXY(2,3);
+        gotoXY(2, 3);
         cout << "┌───────────────────────────┐";
-        for (int i=0; i<4; i++) {
-            gotoXY(2,4+i);
+        for (int i = 0; i < 4; i++) {
+            gotoXY(2, 4 + i);
             cout << "│";
-            gotoXY(30, 4+i);
+            gotoXY(30, 4 + i);
             cout << "│";
         }
-        gotoXY(2,8);
+        gotoXY(2, 8);
         cout << "└───────────────────────────┘";
-        gotoXY(3,4);
+        gotoXY(3, 4);
         cout << "- ";
         if (i == 0) {
             SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
         }
-        gotoXY(5,4);
+        gotoXY(5, 4);
         cout << "Inserire un nuovo utente";
         SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-        gotoXY(3,5);
+        gotoXY(3, 5);
         cout << "- ";
         if (i == 1) {
             SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
         }
-        gotoXY(5,5);
+        gotoXY(5, 5);
         cout << "Modificare un utente";
         SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-        gotoXY(3,6);
+        gotoXY(3, 6);
         cout << "- ";
         if (i == 2) {
             SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
         }
-        gotoXY(5,6);
+        gotoXY(5, 6);
         cout << "Cancellare un utente";
         SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-        gotoXY(3,7);
+        gotoXY(3, 7);
         cout << "- ";
         if (i == 3) {
             SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
         }
-        gotoXY(5,7);
+        gotoXY(5, 7);
         cout << "Visualizzare gli utenti";
         SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-        gotoXY(0,ip+4);
+        gotoXY(0, ip + 4);
         cout << "  ";
-        gotoXY(0,i+4);
-        cout <<"->";
+        gotoXY(0, i + 4);
+        cout << "->";
 
         ip = i;
         char tasto = _getch();
@@ -193,17 +197,17 @@ void menu(int &posAttuale) {
             inMenu = false;
         }
         if (tasto == SU) {
-            if(i == 0) {
+            if (i == 0) {
                 i = 3;
             } else {
-                i-=1;
+                i -= 1;
             }
         }
         if (tasto == GIU) {
-            if(i == 3) {
+            if (i == 3) {
                 i = 0;
             } else {
-                i+=1;
+                i += 1;
             }
         }
         if (tasto == ENTER) {
@@ -214,81 +218,137 @@ void menu(int &posAttuale) {
             case 0: {
                 bool reinserimento = true;
                 char risposta;
+                int x = 1;
+                int px = x;
+                char s;
                 fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::out | ios::app);
-                if(!fTrimestre.is_open()) {
+                if (!fTrimestre.is_open()) {
                     perror("Errore:");
                 } else {
                     while (reinserimento) {
                         system("cls");
-                        inputTabella(tab,posAttuale);
+                        inputTabella(tab, posAttuale);
                         fTrimestre.write((char *)&tab[posAttuale], sizeof(Archivio));
                         posAttuale++;
                         cout << endl;
-                        do {
-                            cout << " Vuoi inserire un altro utente? (y/n)" << endl;
-                            cout << " ";
-                            cin >> risposta;
-                            cin.ignore(100, '\n');
-                        } while (risposta != 'y' && risposta != 'Y' && risposta != 'n' && risposta != 'N');
-                        if (risposta == 'n' || risposta == 'N') {
-                            reinserimento = false;
+                        system("cls");
+                        while (true) {
+                            gotoXY(0,0);
+                            cout << "Si vuole aggiungere un'altro utente?";
+                            gotoXY(2, 1);
+                            if (x == 1) {
+                                SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                            }
+                            cout << "Si";
+                            SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                            gotoXY(2, 2);
+                            if (x == 2) {
+                                SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                            }
+                            cout << "No";
+                            SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                            gotoXY(0, px);
+                            cout << "  ";
+                            gotoXY(0, x);
+                            cout << "->";
+                            px = x;
+                            s = _getch();
+                            if (s == GIU) {
+                                if (x == 2) {
+                                    x = 1;
+                                } else {
+                                    x += 1;
+                                }
+                            }
+                            if (s == SU) {
+                                if (x == 1) {
+                                    x = 2;
+                                } else {
+                                    x -= 1;
+                                }
+                            }
+                            if (s == ENTER) {
+                                if (x == 1) {
+                                } else {
+                                    reinserimento = false;
+                                }
+                                break;
+                            }
                         }
                         system("cls");
                     }
+                    fTrimestre.close();
                 }
-                fTrimestre.close();
+                break;
             }
-            break;
             case 1: {
-                fTrimestre.open("TRIMESTRE.bin",ios::binary|ios::in|ios::out);
-                if(!fTrimestre.is_open()) {
+                fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::in | ios::out);
+                if (!fTrimestre.is_open()) {
                     perror("Errore:");
                 } else {
-                    int posScelta;
-                    system("cls");
-                    gotoXY(1,1);
-                    cout << "Quale utente si vuole modificare? (da 1 a " << posAttuale << ")" << endl;
-                    gotoXY(1,2);
-                    cin >>posScelta;
-                    cin.ignore(100, '\n');
-                    Archivio t;
-                    fTrimestre.seekg((posScelta-1)*sizeof(Archivio), ios::beg);
-                    if (fTrimestre.read((char *)&t, sizeof(Archivio))) {
+                    if (posAttuale < 1) {
                         system("cls");
-                        modificaMenu(t);
+                        cout << "non ci sono utenti nel sistema aggiungi altri utenti prima di poterli modificare";
+                        Sleep(4000);
                         system("cls");
-                        fTrimestre.seekp((-1) * sizeof(Archivio), ios::cur);
-                        fTrimestre.write((char *)&t, sizeof(Archivio));
-                        tab[posScelta - 1] = t;
-                        hideCursor();
-                        gotoXY(1,1);
-                        cout << "Modifica salvata sul file!";
-                        Sleep(1500);
                     } else {
-                        hideCursor();
-                        gotoXY(1,4);
-                        SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-                        cout << "Utente non trovato!";
-                        Sleep(2000);
-                        SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                        int posScelta;
                         system("cls");
+                        gotoXY(1, 1);
+                        cout << "Quale utente si vuole modificare? (da 1 a " << posAttuale << ")" << endl;
+                        gotoXY(1, 2);
+                        cin >> posScelta;
+                        cin.ignore(100, '\n');
+                        Archivio t;
+                        fTrimestre.seekg((posScelta - 1) * sizeof(Archivio), ios::beg);
+                        if (fTrimestre.read((char *)&t, sizeof(Archivio))) {
+                            system("cls");
+                            modificaMenu(t);
+                            system("cls");
+                            fTrimestre.seekp((-1) * (int)sizeof(Archivio), ios::cur);
+                            fTrimestre.write((char *)&t, sizeof(Archivio));
+                            tab[posScelta - 1] = t;
+                            hideCursor();
+                            gotoXY(1, 1);
+                            cout << "Modifica salvata sul file!";
+                            Sleep(1500);
+                        } else {
+                            hideCursor();
+                            gotoXY(1, 4);
+                            SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                            cout << "Utente non trovato!";
+                            Sleep(2000);
+                            SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                            system("cls");
+                        }
                     }
                 }
                 fTrimestre.close();
+                i = 0;
                 break;
             }
-            case 2:
-                fTrimestre.open("TRIMESTRE.bin",ios::binary|ios::in|ios::out);
-                if(!fTrimestre.is_open()) {
+            case 2: {
+                fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::in | ios::out);
+                if (!fTrimestre.is_open()) {
                     perror("Errore:");
                 } else {
-
+                    if (posAttuale < 1) {
+                        system("cls");
+                        cout << "non ci sono utenti nel sistema aggiungi altri utenti prima di cancellarne";
+                        Sleep(4000);
+                        system("cls");
+                    } else {
+                        Cancella_Utente(posAttuale, contanti, fTrimestre);
+                    }
+                    fTrimestre.close();
                 }
+                i = 0;
                 break;
-            case 3:
+            }
+            case 3: {
+                i = 0;
                 break;
-            default:
-                break;
+            }
             }
         }
     }
@@ -520,6 +580,117 @@ void graficaMenu (Archivio t, int b, int bp, bool inserimento) {
         cout << "─";
     }
     cout << "┘\n";
+}
+
+void Cancella_Utente(int &posAttuale, int &contanti,fstream &fTrimestre) {
+    int n = 0;
+    int x = 1;
+    int px = x;
+    char s;
+    while(true) {
+        while(n<1||n>posAttuale) {
+            system("cls");
+            cout << "Quale utente si vuole cancellare? (da 1 a " << posAttuale << ")" << endl;
+            cin >>n;
+            system("cls");
+            while(true) {
+                hideCursor();
+                gotoXY(0,0);
+                cout << "Sei sicuro di voler cancellare il utente:"<<tab[n].utente;
+                gotoXY(2,1);
+                if(x == 1) {
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                cout << "Si";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                gotoXY(2,2);
+                if (x == 2) {
+                    SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                }
+                cout << "No";
+                SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                gotoXY(0,px);
+                cout << "  ";
+                gotoXY(0,x);
+                cout << "->";
+                px = x;
+                s = _getch();
+                if (s == GIU) {
+                    if(x == 2) {
+                        x = 1;
+                    } else {
+                        x += 1;
+                    }
+                }
+                if (s == SU) {
+                    if(x == 1) {
+                        x = 2;
+                    } else {
+                        x -= 1;
+                    }
+                }
+                if (s == ENTER) {
+                    if (x == 2) {
+                        n = -1;
+                    }
+                }
+                break;
+            }
+            showCursor();
+        }
+        for(int i = n; i < posAttuale ; i++) {
+            fTrimestre.seekp((i - 1) * sizeof(Archivio), ios::beg);
+            fTrimestre.write((char*)&tab[i], sizeof(Archivio));
+        }
+        posAttuale--;
+        while(true) {
+            hideCursor();
+            gotoXY(0,0);
+            cout << "Si vuole cancellare un'altro utente?";
+            gotoXY(2, 1);
+            if (x == 1) {
+                SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            }
+            cout << "Si";
+            SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            gotoXY(2, 2);
+            if (x == 2) {
+                SetConsoleTextAttribute(h, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            }
+            cout << "No";
+            SetConsoleTextAttribute(h, BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            gotoXY(0, px);
+            cout << "  ";
+            gotoXY(0, x);
+            cout << "->";
+            px = x;
+            s = _getch();
+            if (s == GIU) {
+                if (x == 2) {
+                    x = 1;
+                } else {
+                    x += 1;
+                }
+            }
+            if (s == SU) {
+                if (x == 1) {
+                    x = 2;
+                } else {
+                    x -= 1;
+                }
+            }
+            if (s == ENTER) {
+                if (x == 1) {
+                } else {
+                    continue;
+                }
+                showCursor();
+                break;
+            }
+        }
+        break;
+    }
+    system("cls");
 }
 
 void gotoXY(int x, int y) {
