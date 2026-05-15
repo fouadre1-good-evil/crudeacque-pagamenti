@@ -5,3 +5,11 @@
 	<cstring>
 	<iomanip>
 
+1778871247 source:c:\users\fouad\documents\nuova cartella\crudeacque-pagamenti\crudacque & pagamenti\pagamenti\main.cpp
+	<iostream>
+	<cstring>
+	<fstream>
+	<conio.h>
+	<windows.h>
+	<iomanip>
+
