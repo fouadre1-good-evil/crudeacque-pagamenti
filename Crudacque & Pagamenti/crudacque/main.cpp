@@ -22,7 +22,7 @@ struct Archivio {
     double trimestreAttuale;
     double trimestrePrecedente;
     double bolletteNonPagate;
-    bool attivo;
+    bool attivo = false;
 };
 
 Archivio tab [MAX];
@@ -39,6 +39,7 @@ void hideCursor();
 void showCursor();
 void menu(int &n);
 void cancellaUtente(int &posAttuale,int &contanti,fstream &fTrimestre);
+void visuallizzaUtenti(int posAttuale,fstream &fTrimestre);
 
 int lunghezzaNumero(double n);
 int inputInteroSenzaMax (int min, char mex[], int x, int &y);
@@ -373,6 +374,14 @@ void menu(int &posAttuale) {
                 break;
             }
             case 3: {
+                system("cls");
+                if (posAttuale < 1){
+                    cout << "Nessun utente trovato aggiungine alti prima di procedere alla stampa a schermo";
+                    Sleep(4000);
+                }else{
+                    visuallizzaUtenti(posAttuale,fTrimestre);
+                }
+                system("cls");
                 i = 0;
                 break;
             }
@@ -697,12 +706,15 @@ void cancellaUtente(int &posAttuale, int &contanti, fstream &fTrimestre) {
                 tab[i] = tab[i + 1];
             }
             posAttuale--;
-
+            Archivio trye;
+            trye.attivo = true;
             fTrimestre.close();
-            fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::out | ios::trunc);
+            fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::out);
             for (int i = 0; i < posAttuale; i++) {
                 fTrimestre.write((char*)&tab[i], sizeof(Archivio));
             }
+            fTrimestre.seekp(posAttuale,ios::beg);
+            fTrimestre.write((char*)&trye,sizeof(Archivio));
             fTrimestre.close();
 
             fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::in | ios::out);
@@ -768,6 +780,25 @@ void cancellaUtente(int &posAttuale, int &contanti, fstream &fTrimestre) {
         }
     }
     system("cls");
+}
+
+void visuallizzaUtenti(int posAttuale, fstream &fTrimestre)
+{
+        Archivio uscita;
+        char s;
+        fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::in);
+        for (int i = 0; i < posAttuale;i++){
+            fTrimestre.read((char*)&uscita,sizeof(Archivio));
+            cout << "Utente n'"<<i+1<<":"<<uscita.utente<<endl;
+            cout << "Codice fiscale:"<<uscita.codiceFiscale<<endl;
+            cout << "Indirizzo:"<<uscita.indirizzo<<endl;
+            cout << "Trimestre attuale:"<<uscita.trimestreAttuale<<endl;
+            cout << "Trimestre precedente:"<<uscita.trimestrePrecedente<<endl;
+            cout << "Bolette non pagate:"<<uscita.bolletteNonPagate<<endl;
+            cout <<endl;
+        }
+        s = _getch();
+        fTrimestre.close();
 }
 
 void gotoXY(int x, int y) {
