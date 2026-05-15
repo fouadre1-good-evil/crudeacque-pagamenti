@@ -132,7 +132,7 @@ Archivio inputArchivio () {
     t.trimestreAttuale = inputInteroSenzaMax (0, " Digitare la lettura del contatore alla fine del trimestre attuale (in metri cubi): ", x, y);
     t.trimestrePrecedente = inputInteroSenzaMax(0, " Digitare la lettura del contatore alla fine del trimestre precedente (in metri cubi): ", x, y);
     t.bolletteNonPagate = inputInteroSenzaMax(0, " Digitare l'importo di eventuali bollette precedenti non pagate: ", x, y);
-    t.attivo = true;
+    t.attivo = false;
     return t;
 }
 
@@ -375,10 +375,10 @@ void menu(int &posAttuale) {
             }
             case 3: {
                 system("cls");
-                if (posAttuale < 1){
+                if (posAttuale < 1) {
                     cout << "Nessun utente trovato aggiungine alti prima di procedere alla stampa a schermo";
                     Sleep(4000);
-                }else{
+                } else {
                     visuallizzaUtenti(posAttuale,fTrimestre);
                 }
                 system("cls");
@@ -713,7 +713,7 @@ void cancellaUtente(int &posAttuale, int &contanti, fstream &fTrimestre) {
             for (int i = 0; i < posAttuale; i++) {
                 fTrimestre.write((char*)&tab[i], sizeof(Archivio));
             }
-            fTrimestre.seekp(posAttuale,ios::beg);
+            fTrimestre.seekp(posAttuale - 1* sizeof(Archivio),ios::beg);
             fTrimestre.write((char*)&trye,sizeof(Archivio));
             fTrimestre.close();
 
@@ -782,23 +782,24 @@ void cancellaUtente(int &posAttuale, int &contanti, fstream &fTrimestre) {
     system("cls");
 }
 
-void visuallizzaUtenti(int posAttuale, fstream &fTrimestre)
-{
-        Archivio uscita;
-        char s;
-        fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::in);
-        for (int i = 0; i < posAttuale;i++){
+void visuallizzaUtenti(int posAttuale, fstream &fTrimestre) {
+    Archivio uscita;
+    char s;
+    fTrimestre.open("TRIMESTRE.bin", ios::binary | ios::in);
+    for (int i = 0; i < posAttuale; i++) {
+        if(!uscita.attivo) {
             fTrimestre.read((char*)&uscita,sizeof(Archivio));
             cout << "Utente n'"<<i+1<<":"<<uscita.utente<<endl;
             cout << "Codice fiscale:"<<uscita.codiceFiscale<<endl;
             cout << "Indirizzo:"<<uscita.indirizzo<<endl;
             cout << "Trimestre attuale:"<<uscita.trimestreAttuale<<endl;
             cout << "Trimestre precedente:"<<uscita.trimestrePrecedente<<endl;
-            cout << "Bolette non pagate:"<<uscita.bolletteNonPagate<<endl;
+            cout << "Bollette non pagate:"<<uscita.bolletteNonPagate<<endl;
             cout <<endl;
         }
-        s = _getch();
-        fTrimestre.close();
+    }
+    s = _getch();
+    fTrimestre.close();
 }
 
 void gotoXY(int x, int y) {
