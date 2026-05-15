@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1778876924 source:f:\mikschool usb iii superiore\progetti\crudacque & pagamenti\pagamenti\main.cpp
+	<iostream>
+	<cstring>
+	<fstream>
+	<conio.h>
+	<windows.h>
+	<iomanip>
+
